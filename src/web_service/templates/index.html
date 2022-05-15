@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}\
+{% block head %}
+    <script type="text/javascript" src="http://echarts.baidu.com/dist/echarts.js"></script>
+{% endblock %}
+
+{% block body %}
+<div id="main" style="width: 900px;height:470px;"></div>
+
+{% endblock %}
+{% block script %}
+    <script>
+    var a = echarts;
+    var myChart = a.init(document.getElementById('main'));
+     myChart.setOption({
+         title: {
+             text: 'Summary of the number of people who borrowed books and returned books in the past 10 days'
+         },
+         tooltip : {
+        trigger: 'axis'
+        },
+        legend: {
+            data:["Today's data"]
+        },
+        toolbox: {
+            show : true,
+            feature : {
+                mark : {show: true},
+                dataView : {show: true, readOnly: false},
+                magicType : {show: true, type: ['line', 'bar']}
+                // restore : {show: true},
+                // saveAsImage : {show: true}
+            }
+        },
+        calculable : true,
+
+         xAxis : [
+            {
+                type : 'category',
+                boundaryGap : false,
+                data : []
+            }
+        ],
+         yAxis : [
+            {
+                type : 'value',
+                axisLabel : {
+                    formatter: '{value}'
+                }
+            }
+        ],
+         series : [
+            {
+                name:'Maximum quantity',
+                type:'line',
+                data:[],
+                markPoint : {
+                    data : [
+                        {type : 'max', name: 'Max'},
+                        {type : 'min', name: 'Min'}
+                    ]
+                },
+                markLine : {
+                    data : [
+                        {type : 'average', name: 'average'}
+                    ]
+                }
+            }]
+         });
+         myChart.showLoading();   
+         var names=[];    
+         var nums=[];    
+         $.ajax({
+         type : "get",
+         url : "{{ url_for('echarts') }}", 
+         dataType : "json", 
+         success : function(data) {
+             if (data) {
+                for(var i=0;i<data.length;i++){
+                   names.push(data[i]["name"]); 
+                   nums.push(data[i]["num"]); 
+                }
+                myChart.hideLoading();    
+                myChart.setOption({     
+                    xAxis: {
+                        data: names
+                    },
+                    series: [{
+                        name: 'quantity',
+                        data: nums
+                    }]
+                });
+
+             }
+
+        },
+         error : function(errorMsg) {
+             alert("Chart request data failed!");
+             myChart.hideLoading();
+         }
+    })
+    </script>
+
+{% endblock %}

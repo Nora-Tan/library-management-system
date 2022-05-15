@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <script src="../static/layui/layui.js"></script>
+    <link rel="stylesheet" href="../static/layui/css/layui.css">
+    <style>{% block style %}{% endblock %}</style>
+</head>
+<body style="background-color:#f2f2f2;height:100%; width:100%;">
+<script src="../static/layui/layui.js"></script>
+
+
+<div class="layui-container">
+<ul class="layui-nav layui-nav-tree layui-nav-side">
+  <span style="color:#BFC0C2;font-size: medium;margin-left: 20px;line-height: 50px;">Library management system</span>
+  <li class="layui-nav-item">
+    <a href="javascript:;">Library management</a>
+    <dl class="layui-nav-child">
+      <dd><a href="javascript:;">Book storage management</a></dd>
+      <dd><a href="javascript:;">Students borrowwing books</a></dd>
+      <dd><a href="">Students returning books</a></dd>
+      <dd><a href="">Book cancellation</a></dd>
+    </dl>
+  </li>
+  <li class="layui-nav-item">
+    <a href="javascript:;">Information settings</a>
+    <dl class="layui-nav-child">
+      <dd><a href="">Administrator information settings</a></dd>
+      <dd><a href="">Library information settings</a></dd>
+      <dd><a href="">Book thesaurus settings</a></dd>
+    </dl>
+  </li>
+  <li class="layui-nav-item">
+    <a href="http://127.0.0.1:5000/search_book">Book information inquiry</a>
+  </li>
+    <li class="layui-nav-item">
+    <a href="javascript:;">Student information inquiry</a>
+  </li>
+</ul>
+
+<ul class="layui-nav" style="text-align:right;background-color:#FFFFFF;width:110%;">
+  <li class="layui-nav-item">
+    <a href="" style="color:#000000">Personal Center<span class="layui-badge-dot"></span></a>
+     <dl class="layui-nav-child">
+      <dd><a href="javascript:;">Modify the information</a></dd>
+      <dd><a href="javascript:;">Exit the system</a></dd>
+    </dl>
+  </li>
+</ul>
+
+
+<div class="layui-card layui-row layui-col-space10" style="margin:15px 100px;width:100%;">
+    <div class="layui-card-header">{% block card %}{% endblock %}</div>
+    <div class="layui-card-body" style="height:480px">
+        {% block body %}
+        {% endblock %}
+    </div>
+</div>
+
+<script>
+{% block script %}
+
+{% endblock %}
+</script>
+</body>
+</html>

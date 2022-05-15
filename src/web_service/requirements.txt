@@ -1,0 +1,7 @@
+flask_sqlalchemy
+flask_login
+flask-wtf
+Flask==1.1.4
+flask-script==2.0.5
+markupsafe==2.0.1
+nameko

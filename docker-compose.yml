@@ -1,0 +1,67 @@
+version: '3'
+services:
+  rabbitmq:
+    image: "rabbitmq"
+    networks:
+      - service_networks
+    environment:
+      - RABBITMQ_DEFAULT_USER=tan_admin
+      - RABBITMQ_DEFAULT_PASS=Tan789
+  book-microservice:
+    build: 
+      context: ./src
+      dockerfile: ./book_service/Dockerfile
+    networks:
+      - service_networks
+    environment:
+      - nameko_username=tan_admin
+      - nameko_password=Tan789
+    depends_on:
+      - rabbitmq
+    restart: always
+  inventory-microservice:
+    build: 
+      context: ./src
+      dockerfile: ./inventory_service/Dockerfile
+    networks:
+      - service_networks
+    environment:
+      - nameko_username=tan_admin
+      - nameko_password=Tan789
+    depends_on:
+      - rabbitmq
+    restart: always
+  user-microservice:
+    build: 
+      context: ./src
+      dockerfile: ./user_service/Dockerfile
+    networks:
+      - service_networks
+    environment:
+      - nameko_username=tan_admin
+      - nameko_password=Tan789
+    depends_on:
+      - rabbitmq
+    restart: always
+
+  web-service:
+    build:
+      context: ./src
+      dockerfile: ./web_service/Dockerfile  
+    depends_on:
+      - user-microservice
+      - book-microservice
+      - inventory-microservice
+
+    ports:
+      - "5000:5000"
+    networks:
+      - service_networks
+    environment:
+      - nameko_username=tan_admin
+      - nameko_password=Tan789
+    restart: always
+
+networks:
+  service_networks:
+    driver: bridge

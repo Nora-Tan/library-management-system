@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block title %}Students borrow books{% endblock %}
+
+{% block card %}<div class="layui-card-header"><h2>Students borrow books</h2></div>{% endblock %}
+{% block body %}
+    <form class="layui-form" method="post" id="searchForm">
+    <!--{{ form.csrf_token }}-->
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label style="font-size: medium;width: 150px;" class="layui-form-label">Student loan card number:</label>
+                <div class="layui-input-inline">
+                    {{ form.card(class="layui-input", id="card") }}
+                </div>
+                <label style="font-size: medium;width: 80px;" class="layui-form-label">title:</label>
+                <div class="layui-input-inline">
+                    {{ form.book_name(class="layui-input", id="book_name") }}
+                </div>
+                <div class="layui-input-inline">{{ form.submit(class="layui-btn", id="search") }}</div>
+            </div>
+        </div>
+    </form>
+    <div id="remove">
+    <table lay-even id="result" lay-filter="re">
+      <thead>
+        <tr>
+          <th lay-data="{field:'barcode', width:160}">Book Number</th>
+          <th lay-data="{field:'isbn', width:180}">ISBN</th>
+          <th lay-data="{field:'book_name', width:240}">Title</th>
+          <th lay-data="{field:'author', width:160}">Author</th>
+          <th lay-data="{field:'start_date', width:200}">Publishing House</th>
+          <th lay-data="{field:'end_date'}">Operate</th>
+        </tr>
+      </thead>
+      <tbody>
+
+      </tbody>
+    </table>
+    </div>
+    <table id="test" lay-filter="test"></table>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+    layui.use(['form','table','jquery'], function(){
+        var form = layui.form;
+        var table = layui.table;
+        var $ = layui.$;
+
+        table.init('re', {
+              height: 390
+              ,limit: 7
+              ,page: true
+        });
+        table.on('tool(test)', function(obj){ 
+          var data = obj.data; 
+          var layEvent = obj.event; 
+            console.log(obj);
+          if(layEvent === 'borr'){
+            layer.confirm('Confirm the loan?', function(index){
+                table.reload('test', {
+                  url: "{{ url_for('out') }}",
+                  where: {
+                      'barcode': data.barcode,
+                      'card': $('#card').val(),
+                      'book_name': $('#book_name').val()
+                  }
+                });
+                layer.close(index);
+            });
+          }
+        });
+
+        $(document).ready(function(){
+            $('#search').on('click',function () {
+                var form = new FormData(document.getElementById("searchForm"));
+                if($('#card').val() === "" || $('#book_name').val() === ""){
+                    layui.use('layer', function(){
+                        var layer = layui.layer;
+
+                        layer.msg('Please fill in the inquiry content',{time: 800});
+                    });
+                }
+                else{
+                    $.ajax({
+                        url:"{{ url_for('find_stu_book') }}",
+                        type:"post",
+                        data:form,
+                        processData:false,
+                        contentType:false,
+                        success:function(data){
+                            if(data.length !== 0){
+                                if(data[0].stu === 0){
+                                    layui.use('layer', function(){
+                                    var layer = layui.layer;
+
+                                    layer.msg('Please enter the correct card number!',{time: 1000});
+                                    });
+                                }
+                                else if(data[0].stu === 1){
+                                    layui.use('layer', function(){
+                                    var layer = layui.layer;
+
+                                    layer.msg('The card is in arrears!',{time: 1000});
+                                    });
+                                }
+                                else if(data[0].stu === 2){
+                                    layui.use('layer', function(){
+                                    var layer = layui.layer;
+
+                                    layer.msg('The card has expired!',{time: 1000});
+                                    });
+                                }
+                                else if(data[0].stu === 3){
+                                    layui.use('layer', function(){
+                                    var layer = layui.layer;
+
+                                    layer.msg('The card has been reported lost!',{time: 1000});
+                                    });
+                                }
+                                else{
+                                    $('#remove').remove();
+                                    table.render({
+                                        elem: '#test'
+                                        ,data:data
+                                        ,cols: [[
+                                            {field:'barcode', title:'Book Number', width:160}
+                                            ,{field:'isbn', title:'ISBN', width:180}
+                                            ,{field:'book_name', title:'title', width:240}
+                                            ,{field:'author', title:'author', width:140}
+                                            ,{field:'press', title:'Publishing House', width:200}
+                                            ,{title:'Operate', fixed: 'right', align:'center', toolbar: '#barDemo'}
+                                        ]]
+                                        ,page: true
+                                        ,height: 380
+                                        ,limit: 7
+                                        ,response: {
+                                            statusCode: 200
+                                        }
+                                        ,parseData: function(data){
+                                            return {
+                                                "code": 200,
+                                                "msg": data.message,
+                                                "count": data.length,
+                                                "data": data
+                                            };
+                                        }
+                                    });
+                                }
+                            }
+                            else {
+                                layui.use('layer', function(){
+                                var layer = layui.layer;
+
+                                layer.msg('Can not find the book!',{time: 1000});
+                                });
+                            }
+                        }
+                    });
+
+                }
+                return false;
+            });
+        });
+    });
+    </script>
+    <script type="text/html" id="barDemo">
+      <a class="layui-btn layui-btn-sm" lay-event="borr">Lend</a>
+    </script>
+{% endblock %}
+

@@ -1,0 +1,23 @@
+{% extends "base-user.html" %}
+{% block title %}Welcome to the library management system{% endblock %}
+
+{% block body %}
+<div class="login-main">
+    <header class="layui-elip">Login</header>
+    <form class="layui-form" method="post">
+        {{ form.csrf_token }}
+        <div class="layui-input-inline">
+            {{ form.account(class="layui-input",placeholder="Account") }}
+        </div>
+        <div class="layui-input-inline">
+            {{ form.password(class="layui-input",placeholder="Password") }}
+        </div>
+        <div class="layui-input-inline login-btn">
+            {{ form.submit(class="layui-btn") }}
+        </div>
+        <hr/>
+        <p><a href="javascript:;" class="fr">Forgotten password, contact your system administrator</a></p>
+    </form>
+
+</div>
+{% endblock %}
